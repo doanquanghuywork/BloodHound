@@ -1,0 +1,25 @@
+name: Export BloodHound CE Docker Images
+
+on:
+  workflow_dispatch: # Kích hoạt thủ công
+
+jobs:
+  export-images:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull BloodHound CE Images
+        run: |
+          docker pull specterops/bloodhound:latest
+          docker pull neo4j:4.4
+          docker pull postgres:16-alpine
+
+      - name: Export Images to Tar Archive
+        run: |
+          docker save specterops/bloodhound:latest neo4j:4.4 postgres:16-alpine | gzip > bloodhound-ce-images.tar.gz
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bloodhound-ce-docker-images
+          path: bloodhound-ce-images.tar.gz
